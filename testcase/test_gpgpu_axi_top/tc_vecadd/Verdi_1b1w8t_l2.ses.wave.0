@@ -1,0 +1,185 @@
+Magic 271485
+Revision Verdi_T-2022.06-1
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+viewPort 0 25 1920 461 244 81
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+openDirFile -d / "" "/eda/work/chenxc/ventus_test/ventus-gpgpu-verilog/testcase/test_gpgpu_axi_top/tc_vecadd/test.fsdb"
+
+; file time scale:
+; fileTimeScale ### s|ms|us|ns|ps
+
+; signal spacing:
+signalSpacing 5
+
+; windowTimeUnit is used for zoom, cursor & marker
+; waveform viewport range
+zoom 48929246.849144 49847660.793554
+cursor 0.000000
+marker 0.000000
+
+; user define markers
+; userMarker time_pos marker_name color linestyle
+; visible top row signal index
+top 0
+; marker line index
+markerPos 44
+
+; event list
+; addEvent event_name event_expression
+; curEvent event_name
+
+
+
+COMPLEX_EVENT_BEGIN
+
+
+COMPLEX_EVENT_END
+
+
+
+; toolbar current search type
+; curSTATUS search_type
+curSTATUS ByChange
+
+
+addGroup "G1" -e FALSE
+activeDirFile "" "/eda/work/chenxc/ventus_test/ventus-gpgpu-verilog/testcase/test_gpgpu_axi_top/tc_vecadd/test.fsdb"
+addSignal -h 15 /test_gpu_axi_top/clk
+addSignal -h 15 /test_gpu_axi_top/u_dut/gpgpu_top/Scheduler/io_in_d_valid
+addSignal -h 15 -holdScope io_in_d_ready
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_in_d_bits_opcode[2:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_in_d_bits_source[14:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_in_d_bits_address[31:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_in_d_bits_data[1023:0]
+addSignal -h 15 -UNSIGNED -HEX /test_gpu_axi_top/u_dut/gpgpu_top/Scheduler/sourceD/stateReg[2:0]
+addSignal -h 15 -holdScope _io_a_valid_T
+addSignal -h 15 -holdScope _write_sent_T
+addSignal -h 15 -holdScope tobedone
+addSignal -h 15 -holdScope s1_need_r
+addGroup "G2_debug_internal" -e FALSE
+addSignal -h 15 /test_gpu_axi_top/u_dut/gpgpu_top/Scheduler/_schedule_T_1606
+addSignal -h 15 -holdScope _dir_result_buffer_io_deq_valid
+addSignal -h 15 /test_gpu_axi_top/u_dut/gpgpu_top/Scheduler/dir_result_buffer/io_enq_valid
+addSignal -h 15 /test_gpu_axi_top/u_dut/gpgpu_top/Scheduler/_directory_io_result_valid
+addSignal -h 15 -holdScope _directory_io_result_bits_hit
+addSignal -h 15 -holdScope _directory_io_result_bits_dirty
+addSignal -h 15 -holdScope _directory_io_result_bits_last_flush
+addSignal -h 15 /test_gpu_axi_top/u_dut/gpgpu_top/Scheduler/directory/io_result_valid_0
+addSignal -h 15 -holdScope flush_issue_regnext
+addSignal -h 15 -holdScope io_result_bits_last_flush_0
+addSignal -h 15 -holdScope ren1
+addSignal -h 15 -holdScope ren
+addSignal -h 15 -holdScope _ren_T
+addSignal -h 15 -holdScope flush_issue
+addSignal -h 15 -holdScope io_read_ready_0
+addGroup "L2_directory" -e FALSE
+addSignal -h 15 /test_gpu_axi_top/u_dut/gpgpu_top/Scheduler/directory/io_write_valid
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_write_bits_data_tag[18:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_write_bits_set[5:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_write_bits_way[3:0]
+addSignal -h 15 -holdScope io_read_valid
+addSignal -h 15 -holdScope io_read_ready
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_read_bits_opcode[2:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_read_bits_source[14:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_read_bits_spike_info_vaddr[31:0]
+addSignal -h 15 -holdScope io_result_valid
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_result_bits_source[14:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_result_bits_spike_info_vaddr[31:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_result_bits_set[5:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_result_bits_way[3:0]
+addGroup "L2_SoueceD" -e FALSE
+addSubGroup "L2_SoueceD__io_req" -e FALSE
+addSignal -h 15 /test_gpu_axi_top/u_dut/gpgpu_top/Scheduler/sourceD/io_req_valid
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_req_bits_opcode[2:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_req_bits_source[14:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_req_bits_set[5:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_req_bits_way[3:0]
+addSignal -h 15 -holdScope io_req_bits_hit
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_req_bits_source[14:0]
+endSubGroup "L2_SoueceD__io_req"
+addSignal -h 15 /test_gpu_axi_top/u_dut/gpgpu_top/Scheduler/sourceD/io_bs_radr_valid
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_bs_radr_bits_set[5:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_bs_radr_bits_way[3:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_bs_rdat_data[1023:0]
+addSubGroup "L2_BankedStore"
+addSignal -h 15 /test_gpu_axi_top/u_dut/gpgpu_top/Scheduler/bankedStore/io_sinkD_adr_valid
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_sinkD_adr_bits_set[5:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_sinkD_adr_bits_way[3:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_sinkD_dat_data[1023:0]
+addSubGroup "L2_BankedStore-1"
+addSignal -h 15 /test_gpu_axi_top/u_dut/gpgpu_top/Scheduler/bankedStore/io_sourceD_radr_valid
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_sourceD_radr_bits_set[5:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_sourceD_radr_bits_way[3:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_sourceD_rdat_data[1023:0]
+addSignal -h 15 /test_gpu_axi_top/u_dut/gpgpu_top/Scheduler/bankedStore/cc_banks/io_r_req_valid
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_r_req_bits_setIdx[9:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_r_resp_data_0[7:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_r_resp_data_1[7:0]
+addSignal -h 15 -holdScope io_w_req_valid
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_w_req_bits_setIdx[9:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_w_req_bits_data_0[7:0]
+addSignal -h 15 -UNSIGNED -HEX -mark ID_YELLOW5 -tri 1 { 6775000 } -holdScope io_w_req_bits_data_1[7:0]
+addSignal -h 15 /test_gpu_axi_top/u_dut/gpgpu_top/Scheduler/bankedStore/cc_banks/array/W0_en
+addSignal -h 15 -UNSIGNED -HEX -holdScope W0_addr[9:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope W0_data[1023:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope W0_mask[127:0]
+addSignal -h 15 -UNSIGNED -HEX /test_gpu_axi_top/u_dut/gpgpu_top/Scheduler/bankedStore/cc_banks/array/array_5_ext/R0_data[1023:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope reg_R0_addr[9:0]
+addSignal -h 15 -holdScope ram[1023:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope ram[11][1023:0]
+endSubGroup "L2_BankedStore-1"
+endSubGroup "L2_BankedStore"
+addSubGroup "L2_SoueceD__io_d" -e FALSE
+addSignal -h 15 /test_gpu_axi_top/u_dut/gpgpu_top/Scheduler/sourceD/io_d_valid
+addSignal -h 15 -holdScope io_d_ready
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_d_bits_opcode[2:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_d_bits_source[14:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_d_bits_address[31:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_d_bits_data[1023:0]
+endSubGroup "L2_SoueceD__io_d"
+addGroup "G4" -e FALSE
+addSignal -h 15 /test_gpu_axi_top/u_dut/gpgpu_top/Scheduler/_sinkA_io_req_valid
+addSignal -h 15 /test_gpu_axi_top/u_dut/gpgpu_top/Scheduler/sinkA/_io_req_valid_T
+addSignal -h 15 -holdScope io_a_valid
+addSignal -h 15 /test_gpu_axi_top/u_dut/gpgpu_top/l2Distribute/io_memReqIn_valid
+addSignal -h 15 /test_gpu_axi_top/u_dut/gpgpu_top/SM2clusterArbiter/memReqBuf/io_enq_valid
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_enq_bits_spike_info_vaddr[31:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_enq_bits_address[31:0]
+addSignal -h 15 /test_gpu_axi_top/u_dut/gpgpu_top/SM_wrapper/l1Cache2L2Arb/memReqArb/io_in_0_valid
+addSignal -h 15 /test_gpu_axi_top/u_dut/gpgpu_top/SM_wrapper/icache/mshrAccess/io_miss2mem_valid_0
+addSignal -h 15 -holdScope _io_miss2mem_valid_T_1[0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope _GEN_5[3:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope _hasSendStatus_io_next[1:0]
+addSignal -h 15 -holdScope subentry_valid_0_3
+addSignal -h 15 -holdScope subentry_valid_0_2
+addSignal -h 15 -holdScope subentry_valid_0_1
+addSignal -h 15 -holdScope subentry_valid_0_0
+addSignal -h 15 -UNSIGNED -HEX -holdScope entryMatchMissReq[3:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope blockAddr_Access_0[24:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope entry_valid[3:0]
+addGroup "G5" -e FALSE
+addSignal -h 15 /test_gpu_axi_top/u_dut/gpgpu_top/Scheduler/io_in_a_valid
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_in_a_bits_address[31:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_in_a_bits_source[14:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope io_in_a_bits_spike_info_vaddr[31:0]
+addGroup "G6"
+
+; getSignalForm Scope Hierarchy Status
+; active file of getSignalForm
+activeDirFile "" "/eda/work/chenxc/ventus_test/ventus-gpgpu-verilog/testcase/test_gpgpu_axi_top/tc_vecadd/test.fsdb"
+
+GETSIGNALFORM_SCOPE_HIERARCHY_BEGIN
+getSignalForm close
+
+"/test_gpu_axi_top"
+
+SCOPE_LIST_BEGIN
+"/test_gpu_axi_top"
+SCOPE_LIST_END
+
+GETSIGNALFORM_SCOPE_HIERARCHY_END
+
+

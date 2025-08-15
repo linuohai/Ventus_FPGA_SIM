@@ -1,0 +1,113 @@
+@verdi rc file Version 1.0
+[General]
+saveDB = TRUE
+relativePath = FALSE
+saveSingleView = FALSE
+saveNWaveWinId = 2
+VerdiVersion = Verdi_T-2022.06-1
+[KeyNote]
+Line1 = invoke directory: /eda/work/chenxc/ventus_test/ventus-gpgpu-verilog/testcase/test_gpgpu_axi_top/tc_vecadd
+Line2 = command line: -f ../common/run.f -ba 
+Line3 = current trace scope: test_gpu_axi_top.u_dut.gpgpu_top.Scheduler.bankedStore.cc_banks.array.array_5_ext
+Line4 = memo:
+Line5 = Save Open Database Information: Yes
+Line6 = Path Option: Absolute Paths
+Line7 = Windows Option: All Windows
+[OneSearch]
+isExisted = TRUE
+[TestBench]
+ConstrViewShow = 0
+InherViewShow = 0
+FSDBMsgShow = 0
+AnnotationShow = 0
+Console = FALSE
+powerDumped = 0
+[ba]
+options = "-incr -clockSkew 0 -loopUnroll 0 -bboxEmptyModule 0 -bboxIgnoreProtected 0 -cellModel 0 -cont_ba_err 0 "
+[fusa]
+fdb_server = 
+fdb_proj = 
+fdb_campaign = 
+fdb_tool = 
+[hb]
+postSimFile = /eda/work/chenxc/ventus_test/ventus-gpgpu-verilog/testcase/test_gpgpu_axi_top/tc_vecadd/test.fsdb
+syncTime = 0
+viewport = 0 27 1920 977 0 0 368 1918
+activeNode = "test_gpu_axi_top.u_dut.gpgpu_top.Scheduler.bankedStore.cc_banks.array.array_5_ext"
+activeScope = "test_gpu_axi_top.u_dut.gpgpu_top.Scheduler.bankedStore.cc_banks.array.array_5_ext"
+activeFile = "../../../src/gen_fpga_verilog/array_5_ext.v"
+interactiveMode = False
+viewType = Source
+simulatorMode = False
+sourceBeginLine = 25
+baMode = False
+srcLineNum = True
+AutoWrap = True
+IdentifyFalseLogic = False
+syncSignal = False
+traceMode = Hierarchical
+showTraceInSchema = True
+paMode = False
+funcMode = False
+powerAwareAnnot = True
+safetyAwareAnnot = True
+amsAnnot = True
+DnDtraceCrossHierOnly = True
+leadingZero = False
+signalPane = False
+SourceVerticalScrollLines = 5
+Scope1 = "test_gpu_axi_top.u_dut.gpgpu_top.Scheduler.bankedStore.cc_banks.array.array_5_ext"
+Scope2 = "test_gpu_axi_top.u_dut.gpgpu_top.Scheduler.bankedStore.cc_banks.array"
+Scope3 = "test_gpu_axi_top.u_dut.gpgpu_top.Scheduler.bankedStore.cc_banks"
+Scope4 = "test_gpu_axi_top.u_dut.gpgpu_top.Scheduler.bankedStore"
+Scope5 = "test_gpu_axi_top.u_dut.gpgpu_top.Scheduler.sourceD"
+Scope6 = "test_gpu_axi_top.u_dut.gpgpu_top.Scheduler.directory"
+Scope7 = "test_gpu_axi_top.u_dut.gpgpu_top.Scheduler"
+Scope8 = "test_gpu_axi_top.u_dut.gpgpu_top.SM_wrapper.icache.mshrAccess"
+Scope9 = "test_gpu_axi_top.u_dut.gpgpu_top.SM_wrapper.icache.mshrAccess.Unnamed_$MSHR_sv_244"
+Scope10 = "test_gpu_axi_top.u_dut.gpgpu_top.SM_wrapper.l1Cache2L2Arb.memReqArb"
+multipleSelection = 1 36 5 0 0
+sdfCheckUndef = FALSE
+simFlow = FALSE
+[hb.design]
+importCmd = "-f" "../common/run.f" 
+invokeDir = /eda/work/chenxc/ventus_test/ventus-gpgpu-verilog/testcase/test_gpgpu_axi_top/tc_vecadd
+[hb.sourceTab.1]
+scope = test_gpu_axi_top.u_dut.gpgpu_top.Scheduler.bankedStore.cc_banks.array.array_5_ext
+File = /eda/work/chenxc/ventus_test/ventus-gpgpu-verilog/src/gen_fpga_verilog/array_5_ext.v
+Line = 26
+[nMemoryManager]
+WaveformFile = /eda/work/chenxc/ventus_test/ventus-gpgpu-verilog/testcase/test_gpgpu_axi_top/tc_vecadd/test.fsdb
+UserActionNum = 0
+nMemWindowNum = 1
+[nMemoryWindow_0]
+nMemGetVariable = -var test_gpu_axi_top.u_dut.gpgpu_top.Scheduler.bankedStore.cc_banks.array.array_5_ext.ram -from DUMPED_BY_SIMULATOR -addrRange [15:0] -wordBitRange [531:0] -wordsInOneRow 8
+nMemSetTime = -time 6915000
+nMemSetDispOptions = -addrRadix Oct -addrColWidth 120 -valueColWidth 100
+nMemSetRadix = -format Hex -notation Unsigned
+[wave.0]
+viewPort = 0 25 1920 461 244 81
+primaryWindow = TRUE
+SessionFile = /eda/work/chenxc/ventus_test/ventus-gpgpu-verilog/testcase/test_gpgpu_axi_top/tc_vecadd/Verdi_1b1w8t.ses.wave.0
+displayGrid = FALSE
+hierarchicalName = FALSE
+snap = TRUE
+displayLeadingZeros = FALSE
+fixDelta = FALSE
+displayCursorMarker = FALSE
+autoUpdate = FALSE
+highlightGlitchs = FALSE
+waveformSyncCursorMarker = FALSE
+waveformSyncHorizontalRange = FALSE
+waveformSyncVerticalscroll = FALSE
+displayErrors = TRUE
+displayMsgSymbols = TRUE
+showMsgDescriptions = TRUE
+autoFit = FALSE
+displayDeltaY = FALSE
+centerCursor = FALSE
+fsaRegMask = TRUE
+fsaCoreMask = TRUE
+fsaSfsmMask = TRUE
+fsaEcrMask = TRUE
+tPropMask = TRUE

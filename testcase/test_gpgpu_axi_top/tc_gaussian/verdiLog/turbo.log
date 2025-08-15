@@ -1,0 +1,2 @@
+Command Line: /eda/synopsys/tools/verdi/X-2025.06-1/platform/LINUXAMD64/bin/Novas -f ../common/run.f -ssf ./test.fsdb
+uname(Linux dsplab_eda 4.18.0-553.69.1.el8_10.x86_64 #1 SMP Mon Aug 11 07:22:08 EDT 2025 x86_64)
