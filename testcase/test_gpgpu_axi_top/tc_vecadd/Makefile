@@ -13,10 +13,10 @@ run-vcs-8w4t:
 	vcs -full64 -LDFLAGS -Wl,--no-as-needed -R -sverilog -timescale=1ns/1ps -f ../common/run.f -debug_access+all +fsdb+functions -l simv.log +define+CASE_8W4T
 
 run-vcs-4w8t:
-	vcs -full64 -LDFLAGS -Wl,--no-as-needed -R -sverilog -timescale=1ns/1ps -f ../common/run.f -debug_access+all +fsdb+functions -l simv.log +define+CASE_4W8T +vcs+initreg+random
+	vcs -full64 -LDFLAGS -Wl,--no-as-needed -R -sverilog -timescale=1ns/1ps -f ../common/run.f -debug_access+all +fsdb+functions -l simv.log +define+CASE_4W8T +vcs+initreg+random +vcs+finish+1000000000  +ntb_random_seed_automatic
 
 run-vcs-1w8t:
-	vcs -full64 -LDFLAGS -Wl,--no-as-needed -R -sverilog -timescale=1ns/1ns -f ../common/run.f -debug_access+all +fsdb+functions -l simv.log +define+CASE_1W8T +vcs+initreg+random +vcs+finish+100000000
+	vcs -full64 -LDFLAGS -Wl,--no-as-needed -R -sverilog -timescale=1ns/1ns -f ../common/run.f -debug_access+all +fsdb+functions -l simv.log +define+CASE_1W8T +vcs+initreg+random +vcs+finish+100000000  +ntb_random_seed_automatic -notice
 
 run-vcs-4w16t:
 	vcs -full64 -LDFLAGS -Wl,--no-as-needed -R -sverilog -timescale=1ns/1ps -f ../common/run.f -debug_access+all +fsdb+functions -l simv.log +define+CASE_4W16T
