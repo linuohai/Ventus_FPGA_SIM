@@ -5,24 +5,26 @@ help:
 	@echo "make run-vcs-4w8t                "
 	@echo "make run-vcs-4w16t               "
 	@echo "make run-vcs-4w32t               "
+	@echo "make run-vcs-1w8t               	"
+	@echo "make re-run-vcs-NwNt  to continue get license "
 	@echo "make verdi                       "
 	@echo "make clean                       "
 	@echo "================================="
 
 run-vcs-8w4t:
-	vcs -full64 -LDFLAGS -Wl,--no-as-needed -R -sverilog -timescale=1ns/1ps -f ../common/run.f -debug_access+all +fsdb+functions -l simv.log +define+CASE_8W4T
+	vcs -full64 -LDFLAGS -Wl,--no-as-needed -R -sverilog -timescale=1ns/1ns -f ../common/run.f -debug_access+all +fsdb+functions -l simv.log +define+CASE_8W4T +vcs+initreg+random +vcs+finish+1000000000  +ntb_random_seed_automatic -notice
 
 run-vcs-4w8t:
-	vcs -full64 -LDFLAGS -Wl,--no-as-needed -R -sverilog -timescale=1ns/1ps -f ../common/run.f -debug_access+all +fsdb+functions -l simv.log +define+CASE_4W8T +vcs+initreg+random +vcs+finish+1000000000  +ntb_random_seed_automatic
+	vcs -full64 -LDFLAGS -Wl,--no-as-needed -R -sverilog -timescale=1ns/1ns -f ../common/run.f -debug_access+all +fsdb+functions -l simv.log +define+CASE_4W8T +vcs+initreg+random +vcs+finish+1000000000  +ntb_random_seed_automatic -notice
 
 run-vcs-1w8t:
 	vcs -full64 -LDFLAGS -Wl,--no-as-needed -R -sverilog -timescale=1ns/1ns -f ../common/run.f -debug_access+all +fsdb+functions -l simv.log +define+CASE_1W8T +vcs+initreg+random +vcs+finish+100000000  +ntb_random_seed_automatic -notice
 
 run-vcs-4w16t:
-	vcs -full64 -LDFLAGS -Wl,--no-as-needed -R -sverilog -timescale=1ns/1ps -f ../common/run.f -debug_access+all +fsdb+functions -l simv.log +define+CASE_4W16T
+	vcs -full64 -LDFLAGS -Wl,--no-as-needed -R -sverilog -timescale=1ns/1ns -f ../common/run.f -debug_access+all +fsdb+functions -l simv.log +define+CASE_4W16T +vcs+initreg+random +vcs+finish+100000000  +ntb_random_seed_automatic -notice
 
 run-vcs-4w32t:
-	vcs -full64 -LDFLAGS -Wl,--no-as-needed -R -sverilog -timescale=1ns/1ps -f ../common/run.f -debug_access+all +fsdb+functions -l simv.log +define+CASE_4W32T 
+	vcs -full64 -LDFLAGS -Wl,--no-as-needed -R -sverilog -timescale=1ns/1ns -f ../common/run.f -debug_access+all +fsdb+functions -l simv.log +define+CASE_4W32T +vcs+initreg+random +vcs+finish+100000000  +ntb_random_seed_automatic -notice
 
 verdi:
 	verdi -f ../common/run.f -ssf ./test.fsdb &
@@ -35,6 +37,6 @@ clean:
 # Usage: make retry-run-vcs-8w4t
 re-%:
 	@until make $(subst re-,,$@); do \
-		echo "VCS command failed, retrying in 60 seconds..."; \
-		sleep 2; \
+		echo "VCS command failed, retrying in 5 seconds..."; \
+		sleep 5; \
 	done

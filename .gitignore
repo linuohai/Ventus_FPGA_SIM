@@ -8,3 +8,6 @@ simv.log
 *.fsdb
 *.key
 novas_dump.log
+filelist.f
+novas.*
+verdiLog

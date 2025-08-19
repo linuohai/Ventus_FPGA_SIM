@@ -766,8 +766,8 @@ module gpgpu_axi_top(
     .io_host_req_bits_host_gds_baseaddr                         (host_req_gds_baseaddr                         ),
     
      .io_host_req_bits_host_pds_size_per_wf          (host_req_pds_size_per_wf),                                                                                 
-    .io_host_rsp_ready                                (host_rsp_valid                                ),
-    .io_host_rsp_valid                                (host_rsp_ready                                ),
+    .io_host_rsp_ready                                (host_rsp_ready                                ),
+    .io_host_rsp_valid                                (host_rsp_valid                                ),
     .io_host_rsp_bits_inflight_wg_buffer_host_wf_done_wg_id(host_rsp_inflight_wg_buffer_host_wf_done_wg_id),
    
          .io_out_a_0_valid                                   (top_out_a_valid                               ),

@@ -35,16 +35,45 @@ def extract_archive(archive_path, extract_name=None):
         # 使用tar.gz文件名作为默认解压目录名
         extract_name = os.path.basename(archive_path).replace('.tar.gz', '')
     
-    current_dir = os.getcwd()
-    extract_path = os.path.join(current_dir, extract_name)
+    # 使用相对路径
+    extract_path = f"./{extract_name}"
     
     try:
-        with tarfile.open(archive_path, 'r:gz') as tar:
-            tar.extractall(path=current_dir)
-        print(f"成功解压 {archive_path} 到 {extract_path}")
-        return True
+        # 如果目标目录已存在，先删除
+        if os.path.exists(extract_path):
+            print(f"删除现有目录: {extract_path}")
+            ret = os.system(f"rm -rf {extract_path}")
+            if ret != 0:
+                print(f"删除目录失败")
+                return False
+        
+        # 使用mkdir命令创建目录
+        print(f"创建目录: {extract_path}")
+        ret = os.system(f"mkdir -p {extract_path}")
+        if ret != 0:
+            print(f"创建目录失败")
+            return False
+        
+        # 使用tar命令解压，去掉顶级目录
+        print(f"开始解压...")
+        cmd = f"tar --strip-components=1 -xzf {archive_path} -C {extract_path}"
+        ret = os.system(cmd)
+        
+        if ret == 0:
+            print(f"成功解压 {archive_path} 到 {extract_path}")
+            return True
+        else:
+            print(f"解压失败，返回码: {ret}")
+            # 清理失败时创建的目录
+            if os.path.exists(extract_path):
+                os.system(f"rm -rf {extract_path}")
+            return False
+            
     except Exception as e:
         print(f"解压失败: {e}")
+        # 清理失败时创建的目录
+        if os.path.exists(extract_path):
+            os.system(f"rm -rf {extract_path}")
         return False
 
 
