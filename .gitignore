@@ -12,3 +12,5 @@ filelist.f
 novas.*
 verdiLog
 *.fir
+*.rc
+vcs_lic*.log

@@ -172,7 +172,7 @@
 
 `define NUMBER_ENTRIES 2 //This parameter should be a power of 2
 
-`define WAVE_ITEM_WIDTH 4
+`define WAVE_ITEM_WIDTH 6
 
 `define MEM_ADDR_WIDTH 32
 
@@ -190,7 +190,7 @@
 
 `define WG_SLOT_ID_WIDTH $clog2(`NUMBER_WF_SLOTS)
 
-`define WF_COUNT_WIDTH 3
+`define WF_COUNT_WIDTH 6 //最大支持 63 个warp，64 必须加 1 
 
 `define WF_COUNT_WIDTH_PER_WG ($clog2(`WF_COUNT_PER_WG_MAX) + 1)
 

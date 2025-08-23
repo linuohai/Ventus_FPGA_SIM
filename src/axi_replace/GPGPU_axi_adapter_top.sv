@@ -255,7 +255,7 @@
 
 `define NUMBER_ENTRIES 2 //This parameter should be a power of 2
 
-`define WAVE_ITEM_WIDTH 4
+`define WAVE_ITEM_WIDTH 6
 
 `define MEM_ADDR_WIDTH 32
 
