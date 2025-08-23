@@ -1,6 +1,7 @@
 # VCS simulation generated directories
 /testcase/test_gpgpu_axi_top/*/csrc/
 /testcase/test_gpgpu_axi_top/*/simv.daidir/
+/testcase/test_gpgpu_axi_top/*/verdiLog/
 
 # Common simulation output files
 simv

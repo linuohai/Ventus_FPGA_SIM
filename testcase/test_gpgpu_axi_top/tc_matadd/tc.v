@@ -88,6 +88,7 @@ module tc;
         end
         `exe_finish(meta_fname[i], data_fname[i]);
         sum_cycles = sum_cycles + `kernel_cycles;        
+        #1000 
         if(i==(FILE_NUM-1)) begin
           print_result();
         end
