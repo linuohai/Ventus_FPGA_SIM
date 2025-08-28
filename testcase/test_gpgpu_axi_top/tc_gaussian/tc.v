@@ -91,6 +91,22 @@ module tc;
      data_fname[4] = "./softdata/1w16t/Fan1_2.data";
      data_fname[5] = "./softdata/1w16t/Fan2_2.data";
      `endif
+     
+     `ifdef CASE_1W32T
+     meta_fname[0] = "./softdata/1w32t/Fan1_0.metadata";
+     meta_fname[1] = "./softdata/1w32t/Fan2_0.metadata";
+     meta_fname[2] = "./softdata/1w32t/Fan1_1.metadata";
+     meta_fname[3] = "./softdata/1w32t/Fan2_1.metadata";
+     meta_fname[4] = "./softdata/1w32t/Fan1_2.metadata";
+     meta_fname[5] = "./softdata/1w32t/Fan2_2.metadata";
+
+     data_fname[0] = "./softdata/1w32t/Fan1_0.data";
+     data_fname[1] = "./softdata/1w32t/Fan2_0.data";
+     data_fname[2] = "./softdata/1w32t/Fan1_1.data";
+     data_fname[3] = "./softdata/1w32t/Fan2_1.data";
+     data_fname[4] = "./softdata/1w32t/Fan1_2.data";
+     data_fname[5] = "./softdata/1w32t/Fan2_2.data";
+     `endif
 
      `ifdef CASE_4W4T
      meta_fname[0] = "./softdata/4x4/Fan1_0.metadata";
@@ -143,10 +159,10 @@ module tc;
         end
         `exe_finish(meta_fname[i], data_fname[i]);
         sum_cycles = sum_cycles + `kernel_cycles;        
-        if(i==(FILE_NUM-1)) begin
+        #15000 if(i==(FILE_NUM-1)) begin
           print_result();
         end
-        repeat(10)
+        repeat(5000)
         @(posedge clk);
       end
     end
@@ -360,6 +376,15 @@ module tc;
           PASSED;
         end else begin
           $display("***********case_guassian_1w16t*********");
+          FAILED;
+        end
+      `endif
+      `ifdef CASE_1W32T
+        if((&matrix_4_pass) && (&array_4_pass)) begin
+          $display("***********case_guassian_1w32t*********");
+          PASSED;
+        end else begin
+          $display("***********case_guassian_1w32t*********");
           FAILED;
         end
       `endif

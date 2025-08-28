@@ -5,6 +5,7 @@ help:
 	@echo "make run-vcs-2w8t                "
 	@echo "make run-vcs-4w8t               	"
 	@echo "make run-vcs-1w16t               "
+	@echo "make run-vcs-1w32t               "
 	@echo "make verdi                       "
 	@echo "make clean                       "
 	@echo "================================="
@@ -19,7 +20,10 @@ run-vcs-4w8t:
 	vcs -full64 -LDFLAGS -Wl,--no-as-needed -R -sverilog -timescale=1ns/1ps -f ../common/run.f -debug_access+all +fsdb+functions -l simv.log +define+CASE_4W8T +vcs+initreg+random +vcs+finish+1000000000  +ntb_random_seed_automatic -notice
 
 run-vcs-1w16t:
-	vcs -full64 -LDFLAGS -Wl,--no-as-needed -R -sverilog -timescale=1ns/1ps -f ../common/run.f -debug_access+all +fsdb+functions -l simv.log +define+CASE_1W16T +vcs+initreg+random +vcs+finish+1000000000  +ntb_random_seed_automatic -notice
+	vcs -full64 -LDFLAGS -Wl,--no-as-needed -R -sverilog -timescale=1ns/1ps -f ../common/run.f -debug_access+all +fsdb+functions -l simv.log +define+CASE_1W16T +vcs+initreg+random +vcs+finish+10000000000  +ntb_random_seed_automatic -notice
+
+run-vcs-1w32t:
+	vcs -full64 -LDFLAGS -Wl,--no-as-needed -R -sverilog -timescale=1ns/1ps -f ../common/run.f -debug_access+all +fsdb+functions -l simv.log +define+CASE_1W32T +vcs+initreg+random +vcs+finish+10000000000  +ntb_random_seed_automatic -notice
 
 verdi:
 	verdi -f ../common/run.f -ssf ./test.fsdb &
