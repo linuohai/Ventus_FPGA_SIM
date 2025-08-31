@@ -16,3 +16,4 @@ verdiLog
 *.rc
 vcs_lic*.log
 *.swp
+*.log
