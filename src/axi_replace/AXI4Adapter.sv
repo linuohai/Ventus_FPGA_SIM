@@ -1122,117 +1122,213 @@ module axi_cut #(
     );
    
 endmodule
+//==============================================================================
+// Spill Register (无冲刷版本)
+//==============================================================================
+// 
+// 功能描述:
+//   这是一个简化的溢出寄存器模块，内部调用spill_register_flushable实现，
+//   但固定禁用冲刷功能(flush_i = 1'b0)。主要用于需要时序优化但不需要
+//   冲刷功能的场合。
+//
+// 使用场景:
+//   - AXI总线时序优化
+//   - 流水线数据传输
+//   - 打断长组合逻辑路径
+//
+//==============================================================================
+
 module spill_register #(
+  // 数据类型参数，支持任意SystemVerilog类型
   parameter type T      = logic,
+  // 旁路模式参数：1'b0=启用缓冲，1'b1=透明直通
   parameter bit  Bypass = 1'b0   // make this spill register transparent 
   )
   (
-  input  logic clk_i  ,
-  input  logic rst_ni ,
-  input  logic valid_i,
-  output logic ready_o,
-  input  T     data_i ,
-  output logic valid_o,
-  input  logic ready_i,
-  output T     data_o  
+  // 时钟和复位
+  input  logic clk_i  ,    // 时钟信号
+  input  logic rst_ni ,    // 异步复位(低有效)
+  
+  // 上游接口
+  input  logic valid_i,    // 输入数据有效
+  output logic ready_o,    // 准备接收(反压)
+  input  T     data_i ,    // 输入数据
+  
+  // 下游接口
+  output logic valid_o,    // 输出数据有效
+  input  logic ready_i,    // 下游准备接收
+  output T     data_o      // 输出数据
   );
 
+  // 实例化带冲刷功能的溢出寄存器，但固定禁用冲刷功能
   spill_register_flushable #(
-    .T     (T     ),
-    .Bypass(Bypass)
+    .T     (T     ),      // 传递数据类型参数
+    .Bypass(Bypass)       // 传递旁路模式参数
     ) spill_register_flushable_i(
-    .clk_i  ,
-    .rst_ni ,
-    .valid_i,
-    .flush_i(1'b0),
-    .ready_o,
-    .data_i ,
-    .valid_o,
-    .ready_i,
-    .data_o 
+    .clk_i  ,             // 时钟信号
+    .rst_ni ,             // 复位信号
+    .valid_i,             // 输入有效
+    .flush_i(1'b0),       // 固定禁用冲刷功能
+    .ready_o,             // 准备接收输出
+    .data_i ,             // 输入数据
+    .valid_o,             // 输出有效
+    .ready_i,             // 下游准备接收
+    .data_o               // 输出数据
     );
 
 endmodule
 
+//==============================================================================
+// Spill Register with Flush Capability (带冲刷功能的溢出寄存器)
+//==============================================================================
+// 
+// 功能描述:
+//   这是一个支持冲刷功能的双级弹性缓冲器(Elastic Buffer)，用于打断
+//   Ready/Valid协议中的组合逻辑路径，从而改善时序性能。
+//
+// 设计原理:
+//   采用两级寄存器架构实现：
+//   - A寄存器(主缓冲)：直接接收输入数据
+//   - B寄存器(溢出缓冲)：当下游阻塞时缓存A寄存器的数据
+//
+// 时序优化原理:
+//   通过双级设计，ready信号不再直接从下游传播到上游，有效打断了
+//   组合逻辑路径，允许系统运行在更高的时钟频率。
+//
+// 性能特征:
+//   - 最大缓冲深度：2个数据项
+//   - 理想吞吐量：每周期1个数据
+//   - 最大延迟：2个时钟周期
+//   - 支持背压控制
+//
+//==============================================================================
+
 module spill_register_flushable #(
+  // 数据类型参数，可以是任意SystemVerilog类型(struct, logic等)
   parameter type T      = logic,
+  // 旁路模式参数：1'b0=启用双级缓冲，1'b1=透明直通模式
   parameter bit  Bypass = 1'b0   //make this spill register transparent
   )
   (
-  input  logic clk_i  ,
-  input  logic rst_ni ,
-  input  logic valid_i,
-  input  logic flush_i,
-  output logic ready_o,
-  input  T     data_i ,
-  output logic valid_o,
-  input  logic ready_i,
-  output T     data_o  
+  // 时钟和复位信号
+  input  logic clk_i  ,    // 系统时钟
+  input  logic rst_ni ,    // 异步复位信号(低有效)
+  
+  // 上游数据接口
+  input  logic valid_i,    // 输入数据有效信号
+  input  T     data_i ,    // 输入数据
+  output logic ready_o,    // 上游准备接收信号(反压控制)
+  
+  // 下游数据接口
+  output logic valid_o,    // 输出数据有效信号
+  output T     data_o ,    // 输出数据
+  input  logic ready_i,    // 下游准备接收信号
+  
+  // 控制信号
+  input  logic flush_i     // 冲刷信号：立即清空所有缓存数据
   );
 
+  //============================================================================
+  // 旁路模式：直接连接，无缓冲延迟
+  //============================================================================
   if(Bypass) begin : gen_bypass
-    assign valid_o = valid_i;
-    assign ready_o = ready_i;
-    assign data_o  = data_i ; 
+    // 透明模式：所有信号直接连接，实现零延迟传输
+    assign valid_o = valid_i;    // 输出有效 = 输入有效
+    assign ready_o = ready_i;    // 上游准备 = 下游准备
+    assign data_o  = data_i ;    // 输出数据 = 输入数据
   end
+  //============================================================================
+  // 双级寄存器模式：提供缓冲和时序优化
+  //============================================================================
   else begin : gen_spill_reg
-    T a_data_q;
-    logic a_full_q;
-    logic a_fill,a_drain;
+    
+    //==========================================================================
+    // A寄存器(主缓冲寄存器)声明
+    //==========================================================================
+    T a_data_q;              // A寄存器数据存储
+    logic a_full_q;          // A寄存器满标志位
+    logic a_fill, a_drain;   // A寄存器填充/排空控制信号
 
+    // A寄存器数据存储器
     always_ff @(posedge clk_i or negedge rst_ni) begin : ps_a_data
       if(!rst_ni)
-        a_data_q <= '0;
+        a_data_q <= '0;       // 复位时清零数据
       else if (a_fill)
-        a_data_q <= data_i;
+        a_data_q <= data_i;   // 填充时锁存输入数据
     end
 
+    // A寄存器满状态标志寄存器
     always_ff @(posedge clk_i or negedge rst_ni) begin : ps_a_full
       if(!rst_ni)
-        a_full_q <= '0;
+        a_full_q <= '0;       // 复位时A寄存器为空
       else if (a_fill || a_drain)
-        a_full_q <= a_fill;
+        a_full_q <= a_fill;   // 填充时置1，排空时置0
     end
 
-    // The B register
-    T b_data_q;
-    logic b_full_q;
-    logic b_fill,b_drain;
+    //==========================================================================
+    // B寄存器(溢出缓冲寄存器)声明
+    //==========================================================================
+    T b_data_q;              // B寄存器数据存储
+    logic b_full_q;          // B寄存器满标志位
+    logic b_fill, b_drain;   // B寄存器填充/排空控制信号
 
+    // B寄存器数据存储器
     always_ff @(posedge clk_i or negedge rst_ni) begin : ps_b_data
       if(!rst_ni)
-        b_data_q <= '0;
+        b_data_q <= '0;       // 复位时清零数据
       else if (b_fill)
-        b_data_q <= a_data_q;
+        b_data_q <= a_data_q; // 填充时从A寄存器获取数据
     end
 
+    // B寄存器满状态标志寄存器
     always_ff @(posedge clk_i or negedge rst_ni) begin : ps_b_full
       if(!rst_ni)
-        b_full_q <= '0;
+        b_full_q <= '0;       // 复位时B寄存器为空
       else if (b_fill || b_drain)
-        b_full_q <= b_fill;
+        b_full_q <= b_fill;   // 填充时置1，排空时置0
     end
 
-    // Fill the A register when the A or B register is empty. Drain the A register
-    // whenever it is full and being filled, or if a flush is requested.
+    //==========================================================================
+    // A寄存器控制逻辑
+    //==========================================================================
+    // A寄存器填充条件：
+    // - 输入数据有效 AND 模块准备接收 AND 无冲刷请求
     assign a_fill = valid_i && ready_o && (!flush_i);
+    
+    // A寄存器排空条件：
+    // - (A寄存器满 AND B寄存器空) OR 收到冲刷请求
+    // 说明：A满且B空时，A的数据可以直接输出或转移到B
     assign a_drain = (a_full_q && !b_full_q) || flush_i;
 
-    // Fill the B register whenever the A register is drained, but the downstream
-    // circuit is not ready. Drain the B register whenever it is full and the
-    // downstream circuit is ready, or if a flush if requested.
+    //==========================================================================
+    // B寄存器控制逻辑
+    //==========================================================================
+    // B寄存器填充条件：
+    // - A寄存器正在排空 AND 下游未准备好 AND 无冲刷请求
+    // 说明：当A要排空但下游阻塞时，数据溢出到B寄存器暂存
     assign b_fill = a_drain && (!ready_i) && (!flush_i);
+    
+    // B寄存器排空条件：
+    // - (B寄存器满 AND 下游准备好) OR 收到冲刷请求
+    // 说明：B满且下游就绪时，输出B中的数据
     assign b_drain = (b_full_q && ready_i) || flush_i;
 
-    // We can accept input as long as register B is not full.
-    // Note: flush_i and valid_i must not be high at the same time,
-    // otherwise an invalid handshake may occur
+    //==========================================================================
+    // 输出控制逻辑
+    //==========================================================================
+    
+    // 上游准备信号：只要有任一寄存器非满就能接收数据
+    // 这确保了最大的接收能力(2个数据的缓冲深度)
+    // 注意：flush_i和valid_i不能同时为高，否则可能导致握手协议错误
     assign ready_o = !a_full_q || !b_full_q;
     
-    // The unit provides output as long as one of the registers is filled.
+    // 输出有效信号：只要有任一寄存器含有数据就能输出
     assign valid_o = a_full_q | b_full_q;
 
-    // We empty the spill register before the slice register.
+    // 输出数据选择：B寄存器优先输出(保证FIFO顺序)
+    // - 如果B寄存器有数据，优先输出B中的数据(先进先出)
+    // - 否则输出A寄存器中的数据
+    // 这确保了数据传输的时序正确性
     assign data_o = b_full_q ? b_data_q : a_data_q;
   end
 

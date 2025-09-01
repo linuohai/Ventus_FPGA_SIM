@@ -172,6 +172,7 @@ module L1TagAccess(	// ventus/src/L1Cache/L1TagAccess.scala:24:7
   wire         _dirtyMaskArb_io_in_1_ready;	// ventus/src/L1Cache/L1TagAccess.scala:221:28
   wire         _dirtyMaskArb_io_out_valid;	// ventus/src/L1Cache/L1TagAccess.scala:221:28
   wire [7:0]   _dirtyMaskArb_io_out_bits_setIdx;	// ventus/src/L1Cache/L1TagAccess.scala:221:28
+  wire         _dirtyMaskAccess_io_r_req_ready;	// ventus/src/L1Cache/L1TagAccess.scala:209:31
   wire [127:0] _dirtyMaskAccess_io_r_resp_data_0;	// ventus/src/L1Cache/L1TagAccess.scala:209:31
   wire [127:0] _dirtyMaskAccess_io_r_resp_data_1;	// ventus/src/L1Cache/L1TagAccess.scala:209:31
   wire         _timeAccessWArb_io_out_valid;	// ventus/src/L1Cache/L1TagAccess.scala:181:30
@@ -12962,6 +12963,7 @@ module L1TagAccess(	// ventus/src/L1Cache/L1TagAccess.scala:24:7
     .io_in_1_bits_setIdx (io_probeRead_bits_setIdx),
     .io_in_2_valid       (~io_probeRead_valid & ~io_allocateWrite_valid),	// ventus/src/L1Cache/L1TagAccess.scala:135:{37,57,60}
     .io_in_2_bits_setIdx (choosenDirtySetIdx_st0),	// src/main/scala/chisel3/util/Mux.scala:50:70
+    .io_out_ready        (1'h1),	// ventus/src/L1Cache/L1TagAccess.scala:115:29, :127:31, :168:26, :181:30, :209:31, :249:33
     .io_out_valid        (_tagAccessRArb_io_out_valid),
     .io_out_bits_setIdx  (_tagAccessRArb_io_out_bits_setIdx)
   );
@@ -12998,6 +13000,7 @@ module L1TagAccess(	// ventus/src/L1Cache/L1TagAccess.scala:24:7
   SRAMTemplate_4 dirtyMaskAccess (	// ventus/src/L1Cache/L1TagAccess.scala:209:31
     .clock                 (clock),
     .reset                 (reset),
+    .io_r_req_ready        (_dirtyMaskAccess_io_r_req_ready),
     .io_r_req_valid        (_dirtyMaskArb_io_out_valid),	// ventus/src/L1Cache/L1TagAccess.scala:221:28
     .io_r_req_bits_setIdx  (_dirtyMaskArb_io_out_bits_setIdx),	// ventus/src/L1Cache/L1TagAccess.scala:221:28
     .io_r_resp_data_0      (_dirtyMaskAccess_io_r_resp_data_0),
@@ -13016,6 +13019,7 @@ module L1TagAccess(	// ventus/src/L1Cache/L1TagAccess.scala:24:7
     .io_in_1_bits_setIdx (io_probeRead_bits_setIdx),
     .io_in_2_valid       (|_hasDirty_st0_T),	// ventus/src/L1Cache/L1TagAccess.scala:329:{30,37}
     .io_in_2_bits_setIdx (choosenDirtySetIdx_st0),	// src/main/scala/chisel3/util/Mux.scala:50:70
+    .io_out_ready        (_dirtyMaskAccess_io_r_req_ready),	// ventus/src/L1Cache/L1TagAccess.scala:209:31
     .io_out_valid        (_dirtyMaskArb_io_out_valid),
     .io_out_bits_setIdx  (_dirtyMaskArb_io_out_bits_setIdx)
   );

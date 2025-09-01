@@ -87,7 +87,8 @@
 module SRAMTemplate_4(	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7
   input          clock,	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7
                  reset,	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7
-                 io_r_req_valid,	// ventus/src/SRAMTemplate/SRAMTemplate.scala:90:14
+  output         io_r_req_ready,	// ventus/src/SRAMTemplate/SRAMTemplate.scala:90:14
+  input          io_r_req_valid,	// ventus/src/SRAMTemplate/SRAMTemplate.scala:90:14
   input  [7:0]   io_r_req_bits_setIdx,	// ventus/src/SRAMTemplate/SRAMTemplate.scala:90:14
   output [127:0] io_r_resp_data_0,	// ventus/src/SRAMTemplate/SRAMTemplate.scala:90:14
                  io_r_resp_data_1,	// ventus/src/SRAMTemplate/SRAMTemplate.scala:90:14
@@ -98,7 +99,13 @@ module SRAMTemplate_4(	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7
   input  [1:0]   io_w_req_bits_waymask	// ventus/src/SRAMTemplate/SRAMTemplate.scala:90:14
 );
 
+  wire [127:0] wdata_1;	// ventus/src/SRAMTemplate/SRAMTemplate.scala:112:26
+  wire [127:0] wdata_0;	// ventus/src/SRAMTemplate/SRAMTemplate.scala:112:26
   wire [255:0] _array_R0_data;	// ventus/src/SRAMTemplate/SRAMTemplate.scala:96:26
+  reg          _resetState;	// ventus/src/SRAMTemplate/SRAMTemplate.scala:100:30
+  reg  [7:0]   _resetSet;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  assign wdata_0 = _resetState ? 128'h0 : io_w_req_bits_data_0;	// ventus/src/SRAMTemplate/SRAMTemplate.scala:100:30, :112:{26,51}
+  assign wdata_1 = _resetState ? 128'h0 : io_w_req_bits_data_1;	// ventus/src/SRAMTemplate/SRAMTemplate.scala:100:30, :112:{26,51}
   reg  [127:0] bypass_wdata_REG_0;	// ventus/src/SRAMTemplate/SRAMTemplate.scala:128:54
   reg  [127:0] bypass_wdata_REG_1;	// ventus/src/SRAMTemplate/SRAMTemplate.scala:128:54
   reg          bypass_mask_need_check;	// ventus/src/SRAMTemplate/SRAMTemplate.scala:121:29
@@ -115,6 +122,21 @@ module SRAMTemplate_4(	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7
   reg  [127:0] rdata_r_0;	// ventus/src/SRAMTemplate/Hold.scala:18:65
   reg  [127:0] rdata_r_1;	// ventus/src/SRAMTemplate/Hold.scala:18:65
   always @(posedge clock) begin	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7
+    if (reset) begin	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7
+      _resetState <= 1'h1;	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :100:30
+      _resetSet <= 8'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+      rdata_r_0 <= 128'h0;	// ventus/src/SRAMTemplate/Hold.scala:18:65, ventus/src/SRAMTemplate/SRAMTemplate.scala:112:51
+      rdata_r_1 <= 128'h0;	// ventus/src/SRAMTemplate/Hold.scala:18:65, ventus/src/SRAMTemplate/SRAMTemplate.scala:112:51
+    end
+    else begin	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7
+      _resetState <= ~(_resetState & (&_resetSet)) & _resetState;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, :117:24, :118:{16,23}, ventus/src/SRAMTemplate/SRAMTemplate.scala:100:30, :102:{24,38}
+      if (_resetState)	// ventus/src/SRAMTemplate/SRAMTemplate.scala:100:30
+        _resetSet <= _resetSet + 8'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+      if (rdata_REG) begin	// ventus/src/SRAMTemplate/SRAMTemplate.scala:139:59
+        rdata_r_0 <= mem_rdata_0;	// ventus/src/SRAMTemplate/Hold.scala:18:65, ventus/src/SRAMTemplate/SRAMTemplate.scala:134:30
+        rdata_r_1 <= mem_rdata_1;	// ventus/src/SRAMTemplate/Hold.scala:18:65, ventus/src/SRAMTemplate/SRAMTemplate.scala:134:30
+      end
+    end
     bypass_wdata_REG_0 <= io_w_req_bits_data_0;	// ventus/src/SRAMTemplate/SRAMTemplate.scala:128:54
     bypass_wdata_REG_1 <= io_w_req_bits_data_1;	// ventus/src/SRAMTemplate/SRAMTemplate.scala:128:54
     bypass_mask_need_check <= io_r_req_valid & io_w_req_valid;	// ventus/src/SRAMTemplate/SRAMTemplate.scala:121:{29,34}
@@ -122,14 +144,6 @@ module SRAMTemplate_4(	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7
     bypass_mask_raddr_reg <= io_r_req_bits_setIdx;	// ventus/src/SRAMTemplate/SRAMTemplate.scala:123:28
     bypass_mask_bypass_REG <= io_w_req_bits_waymask;	// ventus/src/SRAMTemplate/SRAMTemplate.scala:125:76
     rdata_REG <= io_r_req_valid;	// ventus/src/SRAMTemplate/SRAMTemplate.scala:139:59
-    if (reset) begin	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7
-      rdata_r_0 <= 128'h0;	// ventus/src/SRAMTemplate/Hold.scala:18:65, ventus/src/SRAMTemplate/SRAMTemplate.scala:112:51
-      rdata_r_1 <= 128'h0;	// ventus/src/SRAMTemplate/Hold.scala:18:65, ventus/src/SRAMTemplate/SRAMTemplate.scala:112:51
-    end
-    else if (rdata_REG) begin	// ventus/src/SRAMTemplate/SRAMTemplate.scala:139:59
-      rdata_r_0 <= mem_rdata_0;	// ventus/src/SRAMTemplate/Hold.scala:18:65, ventus/src/SRAMTemplate/SRAMTemplate.scala:134:30
-      rdata_r_1 <= mem_rdata_1;	// ventus/src/SRAMTemplate/Hold.scala:18:65, ventus/src/SRAMTemplate/SRAMTemplate.scala:134:30
-    end
   end // always @(posedge)
   `ifdef ENABLE_INITIAL_REG_	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7
     `ifdef FIRRTL_BEFORE_INITIAL	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7
@@ -144,25 +158,37 @@ module SRAMTemplate_4(	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7
         for (logic [4:0] i = 5'h0; i < 5'h11; i += 5'h1) begin
           _RANDOM[i] = `RANDOM;	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7
         end	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7
-        bypass_wdata_REG_0 = {_RANDOM[5'h0], _RANDOM[5'h1], _RANDOM[5'h2], _RANDOM[5'h3]};	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :128:54
-        bypass_wdata_REG_1 = {_RANDOM[5'h4], _RANDOM[5'h5], _RANDOM[5'h6], _RANDOM[5'h7]};	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :128:54
-        bypass_mask_need_check = _RANDOM[5'h8][0];	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :121:29
-        bypass_mask_waddr_reg = _RANDOM[5'h8][8:1];	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :121:29, :122:28
-        bypass_mask_raddr_reg = _RANDOM[5'h8][16:9];	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :121:29, :123:28
-        bypass_mask_bypass_REG = _RANDOM[5'h8][18:17];	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :121:29, :125:76
-        rdata_REG = _RANDOM[5'h8][19];	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :121:29, :139:59
+        _resetState = _RANDOM[5'h0][0];	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :100:30
+        _resetSet = _RANDOM[5'h0][8:1];	// src/main/scala/chisel3/util/Counter.scala:61:40, ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :100:30
+        bypass_wdata_REG_0 =
+          {_RANDOM[5'h0][31:9],
+           _RANDOM[5'h1],
+           _RANDOM[5'h2],
+           _RANDOM[5'h3],
+           _RANDOM[5'h4][8:0]};	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :100:30, :128:54
+        bypass_wdata_REG_1 =
+          {_RANDOM[5'h4][31:9],
+           _RANDOM[5'h5],
+           _RANDOM[5'h6],
+           _RANDOM[5'h7],
+           _RANDOM[5'h8][8:0]};	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :128:54
+        bypass_mask_need_check = _RANDOM[5'h8][9];	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :121:29, :128:54
+        bypass_mask_waddr_reg = _RANDOM[5'h8][17:10];	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :122:28, :128:54
+        bypass_mask_raddr_reg = _RANDOM[5'h8][25:18];	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :123:28, :128:54
+        bypass_mask_bypass_REG = _RANDOM[5'h8][27:26];	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :125:76, :128:54
+        rdata_REG = _RANDOM[5'h8][28];	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :128:54, :139:59
         rdata_r_0 =
-          {_RANDOM[5'h8][31:20],
+          {_RANDOM[5'h8][31:29],
            _RANDOM[5'h9],
            _RANDOM[5'hA],
            _RANDOM[5'hB],
-           _RANDOM[5'hC][19:0]};	// ventus/src/SRAMTemplate/Hold.scala:18:65, ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :121:29
+           _RANDOM[5'hC][28:0]};	// ventus/src/SRAMTemplate/Hold.scala:18:65, ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :128:54
         rdata_r_1 =
-          {_RANDOM[5'hC][31:20],
+          {_RANDOM[5'hC][31:29],
            _RANDOM[5'hD],
            _RANDOM[5'hE],
            _RANDOM[5'hF],
-           _RANDOM[5'h10][19:0]};	// ventus/src/SRAMTemplate/Hold.scala:18:65, ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7
+           _RANDOM[5'h10][28:0]};	// ventus/src/SRAMTemplate/Hold.scala:18:65, ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7
@@ -174,12 +200,13 @@ module SRAMTemplate_4(	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7
     .R0_en   (io_r_req_valid),
     .R0_clk  (clock),
     .R0_data (_array_R0_data),
-    .W0_addr (io_w_req_bits_setIdx),
-    .W0_en   (io_w_req_valid),
+    .W0_addr (_resetState ? _resetSet : io_w_req_bits_setIdx),	// src/main/scala/chisel3/util/Counter.scala:61:40, ventus/src/SRAMTemplate/SRAMTemplate.scala:100:30, :111:19
+    .W0_en   (io_w_req_valid | _resetState),	// ventus/src/SRAMTemplate/SRAMTemplate.scala:100:30, :108:52
     .W0_clk  (clock),
-    .W0_data ({io_w_req_bits_data_1, io_w_req_bits_data_0}),	// ventus/src/SRAMTemplate/SRAMTemplate.scala:96:26
-    .W0_mask (io_w_req_bits_waymask)
+    .W0_data ({wdata_1, wdata_0}),	// ventus/src/SRAMTemplate/SRAMTemplate.scala:96:26, :112:26
+    .W0_mask (_resetState ? 2'h3 : io_w_req_bits_waymask)	// ventus/src/SRAMTemplate/SRAMTemplate.scala:100:30, :113:{20,37}
   );
+  assign io_r_req_ready = ~_resetState;	// ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :100:30, :143:21
   assign io_r_resp_data_0 = rdata_REG ? mem_rdata_0 : rdata_r_0;	// ventus/src/SRAMTemplate/Hold.scala:18:{48,65}, ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :134:30, :139:59
   assign io_r_resp_data_1 = rdata_REG ? mem_rdata_1 : rdata_r_1;	// ventus/src/SRAMTemplate/Hold.scala:18:{48,65}, ventus/src/SRAMTemplate/SRAMTemplate.scala:88:7, :134:30, :139:59
 endmodule

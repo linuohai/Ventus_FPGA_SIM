@@ -668,8 +668,10 @@ module gpgpu_axi_top(
   assign amo_i = 4'd0;
   assign addr_i = top_out_a_address;
   assign we_i = (top_out_a_opcode != 'h4); //opcode==0 write,opcode==4 read
-  assign wdata_i = (top_out_a_valid && top_out_a_ready && gnt_o) ? top_out_a_data : l2cache_req_data;
-  assign be_i =  (top_out_a_valid && top_out_a_ready && gnt_o) ? top_out_a_mask : l2cache_req_mask;
+  assign wdata_i = (top_out_a_valid && top_out_a_ready ) ? top_out_a_data : l2cache_req_data;
+  assign be_i =  (top_out_a_valid && top_out_a_ready ) ? top_out_a_mask : l2cache_req_mask;
+  // assign wdata_i = (top_out_a_valid && top_out_a_ready && gnt_o) ? top_out_a_data : l2cache_req_data;
+  // assign be_i =  (top_out_a_valid && top_out_a_ready && gnt_o) ? top_out_a_mask : l2cache_req_mask;
   assign size_i = 3'd3; //8bytes
   assign id_i = top_out_a_source;
 

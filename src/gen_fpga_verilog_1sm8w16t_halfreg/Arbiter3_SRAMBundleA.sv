@@ -92,11 +92,12 @@ module Arbiter3_SRAMBundleA(	// src/main/scala/chisel3/util/Arbiter.scala:133:7
   input  [7:0] io_in_1_bits_setIdx,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
   input        io_in_2_valid,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
   input  [7:0] io_in_2_bits_setIdx,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
+  input        io_out_ready,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
   output       io_out_valid,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
   output [7:0] io_out_bits_setIdx	// src/main/scala/chisel3/util/Arbiter.scala:140:14
 );
 
-  assign io_in_1_ready = ~io_in_0_valid;	// src/main/scala/chisel3/util/Arbiter.scala:45:78, :133:7
+  assign io_in_1_ready = ~io_in_0_valid & io_out_ready;	// src/main/scala/chisel3/util/Arbiter.scala:45:78, :133:7, :153:19
   assign io_out_valid = io_in_0_valid | io_in_1_valid | io_in_2_valid;	// src/main/scala/chisel3/util/Arbiter.scala:133:7, :154:31
   assign io_out_bits_setIdx =
     io_in_0_valid
