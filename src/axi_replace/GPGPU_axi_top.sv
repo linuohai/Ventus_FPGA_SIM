@@ -657,8 +657,8 @@ module gpgpu_axi_top(
       l2cache_req_mask <= {`MASK_BITS{1'd0}}; 
     end
     else begin
-      l2cache_req_data <= (top_out_a_valid) ? top_out_a_data : l2cache_req_data; 
-      l2cache_req_mask <= (top_out_a_valid) ? top_out_a_mask : l2cache_req_mask;
+      l2cache_req_data <= (top_out_a_valid && top_out_a_ready ) ? top_out_a_data : l2cache_req_data; 
+      l2cache_req_mask <= (top_out_a_valid && top_out_a_ready ) ? top_out_a_mask : l2cache_req_mask;
     end 
   end 
   
