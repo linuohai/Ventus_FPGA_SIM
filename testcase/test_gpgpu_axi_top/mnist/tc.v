@@ -20,8 +20,12 @@
 
 
 module tc;
-  parameter METADATA_SIZE   = 1024; //the maximun size of .data
-  parameter DATADATA_SIZE   = 2500; //the maximun size of .metadata
+  parameter METADATA_SIZE   = 1024; //the maximun size of .metadata
+  `ifdef MNIST
+  parameter DATADATA_SIZE   = 260000; //the maximun size of .data
+  `else
+  parameter DATADATA_SIZE   = 2000; //the maximun size of .data
+  `endif
 
   parameter META_FNAME_SIZE = 128;
   parameter DATA_FNAME_SIZE = 128;
@@ -77,6 +81,16 @@ module tc;
      data_fname[1] = "./softdata/mnist_tiny/conv_1.data";
      data_fname[2] = "./softdata/mnist_tiny/conv_2.data";
      `endif
+
+     `ifdef MNIST
+     meta_fname[0] = "./softdata/mnist/conv_0.metadata";
+     meta_fname[1] = "./softdata/mnist/conv_1.metadata";
+     meta_fname[2] = "./softdata/mnist/conv_2.metadata";
+
+     data_fname[0] = "./softdata/mnist/conv_0.data";
+     data_fname[1] = "./softdata/mnist/conv_1.data";
+     data_fname[2] = "./softdata/mnist/conv_2.data";
+     `endif
      
      `ifdef CASE_1W32T
      meta_fname[0] = "./softdata/1w32t/Fan1_0.metadata";
@@ -111,23 +125,14 @@ module tc;
      `endif
 
      `ifdef CASE_4W8T
-     meta_fname[0] = "./softdata/4x8/Fan1_0.metadata";
-     meta_fname[1] = "./softdata/4x8/Fan2_0.metadata";
-     meta_fname[2] = "./softdata/4x8/Fan1_1.metadata";
-     meta_fname[3] = "./softdata/4x8/Fan2_1.metadata";
-     meta_fname[4] = "./softdata/4x8/Fan1_2.metadata";
-     meta_fname[5] = "./softdata/4x8/Fan2_2.metadata";
-     meta_fname[6] = "./softdata/4x8/Fan1_3.metadata";
-     meta_fname[7] = "./softdata/4x8/Fan2_3.metadata";
+     meta_fname[0] = "./softdata/4w8t/conv_0.metadata";
+     meta_fname[1] = "./softdata/4w8t/conv_1.metadata";
+     meta_fname[2] = "./softdata/4w8t/conv_2.metadata";
 
-     data_fname[0] = "./softdata/4x8/Fan1_0.data";
-     data_fname[1] = "./softdata/4x8/Fan2_0.data";
-     data_fname[2] = "./softdata/4x8/Fan1_1.data";
-     data_fname[3] = "./softdata/4x8/Fan2_1.data";
-     data_fname[4] = "./softdata/4x8/Fan1_2.data";
-     data_fname[5] = "./softdata/4x8/Fan2_2.data";
-     data_fname[6] = "./softdata/4x8/Fan1_3.data";
-     data_fname[7] = "./softdata/4x8/Fan2_3.data";
+
+     data_fname[0] = "./softdata/4w8t/conv_0.data";
+     data_fname[1] = "./softdata/4w8t/conv_1.data";
+     data_fname[2] = "./softdata/4w8t/conv_2.data";
      `endif
     end
   endtask
@@ -135,6 +140,7 @@ module tc;
   task test_main;
     integer i;
     integer block_num;
+    integer wg_id_base=0;
     begin
       for(i=0; i<FILE_NUM; i=i+1) begin
         force u_dut.l2_2_mem.m_axi_bvalid_i = 1'd0;
@@ -150,6 +156,18 @@ module tc;
           end else begin
             block_num = 1;  // MNIST_SMALL第二三个文件都是1个block
           end
+        `elsif MNIST
+           if(i == 0 || i == 1) begin
+            block_num = 512; // CASE_4W8T第一个文件是8个block
+          end else begin
+            block_num = 1;  // CASE_4W8T第二三个文件都是1个block
+          end
+        `elsif CASE_4W8T
+           if(i == 0) begin
+            block_num = 64; // CASE_4W8T第一个文件是8个block
+          end else begin
+            block_num = 1;  // CASE_4W8T第二三个文件都是1个block
+          end
         `else
           block_num = 1; // 其他测试默认都是1个block
         `endif
@@ -159,7 +177,8 @@ module tc;
           `get_result_addr(meta_fname[i], data_fname[i]);
         end
         
-        `exe_finish(meta_fname[i], data_fname[i], block_num);
+        `exe_finish(meta_fname[i], data_fname[i], block_num,wg_id_base);
+        wg_id_base = wg_id_base + block_num;
         sum_cycles = sum_cycles + `kernel_cycles;        
         #15000 if(i==(FILE_NUM-1)) begin
           print_result();
@@ -282,6 +301,7 @@ module tc;
     reg   [31:0]    matrix_b    [15:0] ;
     reg   [31:0]    matrix_c    [9:0] ;
     reg   [31:0]    matrix_c2    [9:0] ;
+    reg   [31:0]    matrix_c3    [9:0] ;
     reg   [24:0]    matrix_a_pass     ;
     reg   [15:0]    matrix_b_pass     ;
     reg   [9:0]     matrix_c_pass     ;
@@ -289,6 +309,7 @@ module tc;
     reg   [31:0]    conv1_size        ;
     reg  [31:0]    result_addr = 32'h90007000;
     reg  [31:0]    result_addr2 = 32'h90008000;
+    reg  [31:0]    result_addr3 = 32'h90004000;
     reg  [31:0]    conv2_size  = 32'h00000028;     
 
     integer i,j,k;
@@ -300,6 +321,7 @@ module tc;
       matrix_b = {32'h40bcd8cc,32'h410136f0,32'h4102787e,32'h4035d51a,32'h3fbb8172,32'h400ad0bd,32'h41224622,32'h4056b7d4,32'h00000000,32'h3fe2471f,32'h411cc121,32'h3f8145a5,32'h00000000,32'h4124383c,32'h4087a818,32'h00000000};
       matrix_c = {32'h3f20960c,32'hc0eca689,32'hbec5057b,32'h40818182,32'hc0115c36,32'hc016fffa,32'hc0f2abea,32'h4112a783,32'h3edec0ac,32'h40328269};
       matrix_c2 = {32'h3eccd99d,32'hc06f6092,32'h3ec9ece9,32'h3ff7f27e,32'hbf616ad6,32'hc0025c14,32'hc121ab08,32'h41251c30,32'h3f349f45,32'h4068b791};
+      matrix_c3 = {32'hbf26a10e,32'hc0b6b305,32'h3ffab1f5,32'h40456674,32'hc04a0e71,32'h3e45aa30,32'hc0fc6d15,32'h412b33e3,32'hbfaa0d92,32'h40792ad3};
 
 
 
@@ -340,6 +362,13 @@ module tc;
         $display("----------------RESULT:----------------");
         for(k=0; k<5; k=k+1) begin
           `display_mem(result_addr2+k*8);        
+        end
+      `endif
+
+      `ifdef MNIST
+        $display("----------------RESULT:----------------");
+        for(k=0; k<5; k=k+1) begin
+          `display_mem(result_addr3+k*8);        
         end
       `endif
 
@@ -384,6 +413,18 @@ module tc;
         // $display("matrix_a_pass: %b\nmatrix_b_pass: %b\nmatrix_c_pass: %b",matrix_a_pass,matrix_b_pass,matrix_c_pass);
       `endif
 
+      `ifdef MNIST
+      `store_mem(result_addr3,0,conv2_size,0,1,0);
+        for(integer i=0; i<10; i=i+1) begin        
+          if(`mem_tmp_1[i]==matrix_c3[9-i]) begin
+            matrix_c_pass[i]  = 1'b1;
+          end else begin
+            matrix_c_pass[i]  = 1'b0;
+          end
+        end
+        // $display("matrix_a_pass: %b\nmatrix_b_pass: %b\nmatrix_c_pass: %b",matrix_a_pass,matrix_b_pass,matrix_c_pass);
+      `endif
+
       `ifdef MNIST_TINY
         if((&matrix_a_pass) && (&matrix_b_pass) && (&matrix_c_pass)) begin
           $display("***********Mnist_tiny**********");
@@ -393,12 +434,23 @@ module tc;
           FAILED;
         end
       `endif
+
       `ifdef MNIST_SMALL
         if((&matrix_c_pass)) begin
           $display("***********Mnist_small*********");
           PASSED;
         end else begin
           $display("***********Mnist_small*********");
+          FAILED;
+        end
+      `endif
+
+      `ifdef MNIST
+        if((&matrix_c_pass)) begin
+          $display("***********Mnist*********");
+          PASSED;
+        end else begin
+          $display("***********Mnist*********");
           FAILED;
         end
       `endif
@@ -422,13 +474,15 @@ module tc;
         end
       `endif
       `ifdef CASE_4W8T
-        if((&matrix_5_pass) && (&array_5_pass)) begin
-          $display("***********case_guassian_4w8t**********");
-          PASSED;
-        end else begin
-          $display("***********case_guassian_4w8t**********");
-          FAILED;
+      `store_mem(result_addr2,0,conv2_size,0,1,0);
+        for(integer i=0; i<10; i=i+1) begin        
+          if(`mem_tmp_1[i]==matrix_c2[9-i]) begin
+            matrix_c_pass[i]  = 1'b1;
+          end else begin
+            matrix_c_pass[i]  = 1'b0;
+          end
         end
+        // $display("matrix_a_pass: %b\nmatrix_b_pass: %b\nmatrix_c_pass: %b",matrix_a_pass,matrix_b_pass,matrix_c_pass);
       `endif
 
       $display("************************************");

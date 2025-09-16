@@ -84,7 +84,12 @@ module host_inter(
   task drv_gpu;
     input [META_FNAME_SIZE*8-1:0] fn_metadata;
     input [DATA_FNAME_SIZE*8-1:0] fn_data;
-    reg [31:0] block_id = 0;
+    input [31:0] cta_id_x;
+    input [31:0] cta_id_y;
+    input [31:0] cta_id_z;
+    input [31:0] wg_id;
+    input [31:0] block_id;
+    // reg [31:0] block_id = 0;
     reg [63:0] noused;
     reg [63:0] kernel_id;
     reg [63:0] kernal_size0;
@@ -105,8 +110,7 @@ module host_inter(
       $display("============================================");
       $display("*********");
       $display("Begin test:");
-      $display("metadata is %s:", fn_metadata);
-      $display("data is %s:", fn_data);
+      $display("Starting kernel execution...");
       $display("*********");
       $display("");
       @(posedge clk);
@@ -127,7 +131,7 @@ module host_inter(
       pds_size         = 32'd0;
       //host to cta
       @(posedge clk);
-      axilite_write(32'h0000_0004,{`WG_ID_WIDTH{1'd0}}); //reg[1] host_req_wg_id
+      axilite_write(32'h0000_0004,wg_id); //reg[1] host_req_wg_id
       @(posedge clk);
       axilite_write(32'h0000_0008,wg_size[31:0]); //reg[2] host_req_num_wf
       @(posedge clk);
@@ -151,19 +155,18 @@ module host_inter(
       @(posedge clk);
       axilite_write(32'h0000_0030,metaDataBaseAddr[31:0]); //reg[12] host_req_csr_knl
       @(posedge clk);
-      axilite_write(32'h0000_0034,32'h0); //reg[13] host_req_kernel_size_3d
+      axilite_write(32'h0000_0034,cta_id_x); //reg[13] host_req_kernel_size_3d
       @(posedge clk);
-      axilite_write(32'h0000_0038,32'h0); //reg[14] host_req_kernel_size_3d
+      axilite_write(32'h0000_0038,cta_id_y); //reg[14] host_req_kernel_size_3d
       @(posedge clk);
-      axilite_write(32'h0000_003c,32'h0); //reg[15] host_req_kernel_size_3d
+      axilite_write(32'h0000_003c,cta_id_z); //reg[15] host_req_kernel_size_3d
       @(posedge clk);
       axilite_write(32'h0000_0048,pdsSize*wf_size); //reg[15] host_req_kernel_size_3d
       @(posedge clk);
       axilite_write(32'h0000_0000,32'd1); //reg[0] host_req_valid
       //@(negedge test_gpu_axi_top.u_dut.gpgpu_top.cta.cta2host_rcvd_ack_o);
       $display("*********");
-      $display("metadata is %s:", fn_metadata);
-      $display("data is %s:", fn_data);
+      $display("Kernel configuration completed!");
       $display("Config finish!  time: %t ns",$realtime);
       cycle_count[0] = $realtime;
       $display("*********");
@@ -216,23 +219,59 @@ module host_inter(
   task exe_finish;
     input [META_FNAME_SIZE*8-1:0] fn_metadata;
     input [DATA_FNAME_SIZE*8-1:0] fn_data;
+    input [31:0] n; // 需要等待的block数量
+    input [31:0] wg_id_base;
     reg [`AXILITE_DATA_WIDTH-1:0] r_data;
     integer i;
+    integer block_count,host_req_cnt;
+    reg [31:0] cta_id_x, cta_id_y, cta_id_z,wg_id;
+    reg[63:0] kernal_size_x, kernal_size_y, kernal_size_z;
+    
     begin
       i = 0;
-      r_data=0;
-      while(i == 0) begin
+      block_count = 0;
+      host_req_cnt = 0;
+      r_data = 0;
+      cta_id_x = 0;
+      cta_id_y = 0;
+      cta_id_z = 0;
+      wg_id = wg_id_base;
+      $readmemh(fn_metadata, metadata);
+      kernal_size_x = {metadata[ 5], metadata[ 4]};
+      kernal_size_y = {metadata[ 7], metadata[ 6]};
+      kernal_size_z = {metadata[ 9], metadata[ 8]};
+        while(block_count < n) begin
+          @(posedge clk);
+          // 使用更安全的显示方式，只显示前64个字符
+          // $display("Processing block %d/%d for current kernel", block_count+1, n);
+          if (host_req_cnt < n) begin
+          $display("Launching CTA with ID: x=%d, y=%d, z=%d,wg_id=%d,wgid_inkernel=%d", cta_id_x, cta_id_y, cta_id_z,wg_id,wg_id-wg_id_base);
+          // drv_gpu(fn_metadata, fn_data, 32'd0, 32'd0, 32'd0); 
+          drv_gpu(fn_metadata, fn_data, cta_id_x, cta_id_y, cta_id_z,wg_id,wg_id-wg_id_base); 
+          host_req_cnt = host_req_cnt + 1;  
+          wg_id = wg_id + 1;
+          // 更新 CTA ID 计数逻辑: x 是最快变化的维度
+          cta_id_x = cta_id_x + 1;
+          if (cta_id_x >= kernal_size_x) begin
+            cta_id_x = 0;
+            cta_id_y = cta_id_y + 1;
+            if (cta_id_y >= kernal_size_y) begin
+              cta_id_y = 0;
+              cta_id_z = cta_id_z + 1;
+            end
+          end
+        end
         wait(!s_axilite_rvalid_o)
         axilite_read(32'h0000_0044,r_data);
         @(posedge clk);
-        if(r_data)
-          i = 1;
+        if(r_data) begin
+          block_count = block_count + 1;
+          $display("Block %d finished, total %d/%d", block_count, block_count, n);
           @(posedge clk);
-          @(posedge clk);
+        end
       end
       $display("*********");
-      $display("metadata is %s:", fn_metadata);
-      $display("data is %s:", fn_data);
+      $display("Kernel execution completed!");
       $display("exe finish!     time: %t ns",$realtime);
       cycle_count[1] = $realtime;
       $display("*********");
