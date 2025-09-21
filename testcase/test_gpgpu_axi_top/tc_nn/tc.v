@@ -71,9 +71,14 @@ module tc;
       `endif
 
       `ifdef CASE_4W16T
-        meta_fname[0] = "./softdata/4x16/NearestNeighbor_0.metadata";
-        data_fname[0] = "./softdata/4x16/NearestNeighbor_0.data";
+        meta_fname[0] = "./softdata/nn/NearestNeighbor_0.metadata";
+        data_fname[0] = "./softdata/nn/NearestNeighbor_0.data";
       `endif
+
+      // `ifdef CASE_4W16T
+      //   meta_fname[0] = "./softdata/4x16/NearestNeighbor_0.metadata";
+      //   data_fname[0] = "./softdata/4x16/NearestNeighbor_0.data";
+      // `endif
 
       `ifdef CASE_8W8T
         meta_fname[0] = "./softdata/8x8/NearestNeighbor_0.metadata";
@@ -96,7 +101,7 @@ module tc;
         end
         `exe_finish(meta_fname[i], data_fname[i]);
         sum_cycles = sum_cycles + `kernel_cycles;        
-        if(i==(FILE_NUM-1)) begin
+        #15000 if(i==(FILE_NUM-1)) begin
           print_result();
         end
         repeat(10)

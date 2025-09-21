@@ -24,7 +24,7 @@ module tc;
   `ifdef MNIST
   parameter DATADATA_SIZE   = 260000; //the maximun size of .data
   `else
-  parameter DATADATA_SIZE   = 2000; //the maximun size of .data
+  parameter DATADATA_SIZE   = 2500; //the maximun size of .data
   `endif
 
   parameter META_FNAME_SIZE = 128;
@@ -158,9 +158,9 @@ module tc;
           end
         `elsif MNIST
            if(i == 0 || i == 1) begin
-            block_num = 512; // CASE_4W8T第一个文件是8个block
+            block_num = 512; // 第一个文件是8个block
           end else begin
-            block_num = 1;  // CASE_4W8T第二三个文件都是1个block
+            block_num = 1;  // 第二三个文件都是1个block
           end
         `elsif CASE_4W8T
            if(i == 0) begin

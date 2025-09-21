@@ -151,7 +151,7 @@ module host_inter(
       @(posedge clk);
       axilite_write(32'h0000_0028,32'h0); //reg[10] host_req_gds_baseaddr
       @(posedge clk);
-      axilite_write(32'h0000_002c,pdsBaseAddr[31:0]+block_id*pds_size*wf_size[31:0]*wg_size[31:0]); //reg[11] host_req_pds_baseaddr
+      axilite_write(32'h0000_002c,pdsBaseAddr[31:0]+block_id*pdsSize*wf_size[31:0]*wg_size[31:0]); //reg[11] host_req_pds_baseaddr
       @(posedge clk);
       axilite_write(32'h0000_0030,metaDataBaseAddr[31:0]); //reg[12] host_req_csr_knl
       @(posedge clk);

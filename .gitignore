@@ -17,3 +17,5 @@ verdiLog
 vcs_lic*.log
 *.swp
 *.log
+testcase/test_gpgpu_axi_top/mnist/*.txt
+testcase/test_gpgpu_axi_top/mnist/debug_assert

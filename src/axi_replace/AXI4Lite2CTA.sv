@@ -534,7 +534,7 @@ module axi4lite_2_cta #(
   // output [`GDS_ID_WIDTH:0]        host_req_gds_size_total_o                       ,
   output [`VGPR_ID_WIDTH:0]       host_req_vgpr_size_per_wf_o                     ,
   output [`SGPR_ID_WIDTH:0]       host_req_sgpr_size_per_wf_o                     ,
-  output [15:0]                   host_req_pds_size_per_wf_o,
+  output [31:0]                   host_req_pds_size_per_wf_o,
   output [`MEM_ADDR_WIDTH-1:0]    host_req_gds_baseaddr_o                         ,
   
   output                          s_axilite_awready_o                             ,
@@ -755,7 +755,7 @@ module axi4lite_2_cta #(
    assign host_req_kernel_size_3d_o[(`WG_SIZE_X_WIDTH*(0+1)-1)-:`WG_SIZE_X_WIDTH] = data_buf[(13+1)*AXILITE_DATA_WIDTH-1 -: AXILITE_DATA_WIDTH];   
   assign host_req_kernel_size_3d_o[(`WG_SIZE_X_WIDTH*(1+1)-1)-:`WG_SIZE_X_WIDTH] = data_buf[(14+1)*AXILITE_DATA_WIDTH-1 -: AXILITE_DATA_WIDTH];   
   assign host_req_kernel_size_3d_o[(`WG_SIZE_X_WIDTH*(2+1)-1)-:`WG_SIZE_X_WIDTH] = data_buf[(15+1)*AXILITE_DATA_WIDTH-1 -: AXILITE_DATA_WIDTH];   
-  assign host_req_pds_size_per_wf_o[15:0] = data_buf[(18+1)*AXILITE_DATA_WIDTH-1 -: AXILITE_DATA_WIDTH];
+  assign host_req_pds_size_per_wf_o[31:0] = data_buf[(18+1)*AXILITE_DATA_WIDTH-1 -: AXILITE_DATA_WIDTH];
  always @(posedge clk or negedge rst_n) begin
     if(!rst_n) begin
       data_buf <= 'b0;

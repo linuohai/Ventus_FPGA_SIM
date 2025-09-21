@@ -92,11 +92,11 @@ module tc;
         force u_dut.l2_2_mem.m_axi_bvalid_i = 1'd0;
         init_mem(meta_fname[i], data_fname[i]);
         release u_dut.l2_2_mem.m_axi_bvalid_i;
-        `drv_gpu(meta_fname[i], data_fname[i]);
+        // `drv_gpu(meta_fname[i], data_fname[i]);
         if(i==0) begin
           `get_result_addr(meta_fname[i], data_fname[i]);
         end
-        `exe_finish(meta_fname[i], data_fname[i]);
+        `exe_finish(meta_fname[i], data_fname[i],1,0);
         sum_cycles = sum_cycles + `kernel_cycles;        
         if(i==(FILE_NUM-1)) begin
           print_result();                

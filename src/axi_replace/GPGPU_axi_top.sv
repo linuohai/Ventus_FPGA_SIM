@@ -593,7 +593,7 @@ module gpgpu_axi_top(
   //wire [`GDS_ID_WIDTH:0] host_req_gds_size_total;
   wire [`VGPR_ID_WIDTH:0] host_req_vgpr_size_per_wf;
   wire [`SGPR_ID_WIDTH:0] host_req_sgpr_size_per_wf;
-  wire [15:0] host_req_pds_size_per_wf;
+  wire [31:0] host_req_pds_size_per_wf;
   wire [`MEM_ADDR_WIDTH-1:0] host_req_gds_baseaddr;
   
   wire host_rsp_valid;
